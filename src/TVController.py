@@ -8,16 +8,27 @@ pygame.joystick.init()
 keyboard = Controller()
 
 isControllerConnected = False
+joystick = None
 
 def checkController():
+    global isControllerConnected
+    pygame.joystick.quit()
+    pygame.joystick.init()
+
+
     if pygame.joystick.get_count() == 0:
-        print("No Controller detected. Connect controller!!")
+        if isControllerConnected:
+            print(time.strftime("%H:%M:%S", time.localtime()) + " No Controller detected. Connect controller!!")
         isControllerConnected = False
-        time.sleep(5.0)
+        time.sleep(2.0)
         return False
-    isControllerConnected = True
-    connectController()
-    return True
+    else:
+        if not isControllerConnected:
+            print(time.strftime("%H:%M:%S", time.localtime()) + " Controller connected successfully!")
+        isControllerConnected = True
+        connectController()
+        return True
+
     
 
 def connectController():
@@ -51,8 +62,8 @@ def press_combo(keys):
 def run():
     try:
         while True:
-            while checkController() == False:
-                checkController()
+            while not checkController():
+                time.sleep(2)
             pygame.event.pump()
 
             # Handle button presses (Y, A, B only)
